@@ -12,7 +12,7 @@ const userDB = {};
 
 
 
-router.get('/',verifyToken,(req,res)=>{
+router.get('/',(req,res)=>{
     res.json({
         message : "Not A USer"
     })
@@ -181,7 +181,7 @@ router.post("/login", async (req, res) => {
 });
 
 // Logout Route (clears token from cookies)
-router.post('/logout',verifyToken, (req, res) => {
+router.post('/logout', (req, res) => {
     // Clear the token cookie
     // res.clearCookie('token', { 
     //     httpOnly: true,   // Ensure the token can't be accessed via JavaScript
