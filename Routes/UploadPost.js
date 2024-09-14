@@ -6,9 +6,33 @@ const userModel = require('../Database/Models/User.js');
 const Notification = require('../Database/Models/Notification.js')
 const { v4: uuidv4 } = require('uuid');
 const bucket = require('../Modules/FirebaseConfig.js'); // Import Firebase Storage bucket
-const verifyToken = require('../Modules/VerifyToken.js')
+// const verifyToken = require('../Modules/VerifyToken.js')
 const upload = multer({ storage: multer.memoryStorage() });
 const {uploadToFirebase , deleteFromFirebase} = require('../Modules/uploadToFirebase.js')
+
+
+const jwt = require('jsonwebtoken');
+const SecretKey = process.env.JWT_SECRET; // Secret key used for signing tokens
+
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.token; // Get the token from cookies
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided, authorization denied.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SecretKey); // Verify the token
+    req.user = decoded; // Attach the decoded token (which contains user info) to the request object
+    next(); // Move to the next middleware/route handler
+  } catch (err) {
+    return res.status(401).json({ message: 'Token is not valid, authorization denied.' });
+  }
+};
+
+
+
+
 
 // UploadPost route
 router.post('/UploadPost', verifyToken, upload.single('file'), async (req, res) => {
