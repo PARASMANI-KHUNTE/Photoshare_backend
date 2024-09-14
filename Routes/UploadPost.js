@@ -12,7 +12,7 @@ const {uploadToFirebase , deleteFromFirebase} = require('../Modules/uploadToFire
 
 
 // UploadPost route
-router.post('/UploadPost', verifyToken, upload.single('file'), async (req, res) => {
+router.post('/UploadPost', upload.single('file'), async (req, res) => {
   const { postTitle, postDesc } = req.body;
   const file = req.file;
 
@@ -64,7 +64,7 @@ router.post('/UploadPost', verifyToken, upload.single('file'), async (req, res) 
 });
 
 // GET all posts route
-router.get('/posts',verifyToken, async (req, res) => {
+router.get('/posts', async (req, res) => {
     try {
         // Fetch all posts from the database
         const posts = await postModel.find().populate('PostBy', 'FullName Username AvatarUrl'); // Populating related user data
@@ -83,7 +83,7 @@ router.get('/posts',verifyToken, async (req, res) => {
 
 
 // GET posts by username route
-router.get('/postByUser', verifyToken, async (req, res) => {
+router.get('/postByUser', async (req, res) => {
   const { username } = req.query; // Get the username from query parameters
   // const {username} = req.cookies.username;
 
@@ -115,7 +115,7 @@ router.get('/postByUser', verifyToken, async (req, res) => {
 
 
 // PUT update post route
-router.put('/posts/:postId', verifyToken, async (req, res) => {
+router.put('/posts/:postId', async (req, res) => {
   const { postId } = req.params;
   const { PostTitle, PostDesc } = req.body;
 
@@ -143,7 +143,7 @@ router.put('/posts/:postId', verifyToken, async (req, res) => {
 });
 
 // DELETE post route
-router.delete('/posts/:postId', verifyToken, async (req, res) => {
+router.delete('/posts/:postId', async (req, res) => {
   const { postId } = req.params;
 
   try {
@@ -168,7 +168,7 @@ router.delete('/posts/:postId', verifyToken, async (req, res) => {
   }
 });
 
-router.post('/profile/avatar/:username', verifyToken, upload.single('avatar'), async (req, res) => {
+router.post('/profile/avatar/:username', upload.single('avatar'), async (req, res) => {
   const { username } = req.params;
   const file = req.file;
 
@@ -231,7 +231,7 @@ router.post('/profile/avatar/:username', verifyToken, upload.single('avatar'), a
 
 
 
-router.get('/profile/:username', verifyToken, async (req, res) => {
+router.get('/profile/:username', async (req, res) => {
   try {
     const { username } = req.params;
     
@@ -268,7 +268,7 @@ router.get('/profile/:username', verifyToken, async (req, res) => {
 
 
 // Like or Unlike a post
-router.post('/like', verifyToken, async (req, res) => {
+router.post('/like', async (req, res) => {
   const { postId } = req.body;
   const username = req.cookies.username;
   console.log(`username - ${username}`);
@@ -338,7 +338,7 @@ router.post('/like', verifyToken, async (req, res) => {
 
 
 // Check if the user has liked a post
-router.get('/likeStatus/:postId', verifyToken, async (req, res) => {
+router.get('/likeStatus/:postId', async (req, res) => {
   const { postId } = req.params;
   const username = req.cookies.username; // Fetch username from cookies
 
@@ -370,7 +370,7 @@ router.get('/likeStatus/:postId', verifyToken, async (req, res) => {
 });
 
 
-router.get('/getNotifications/:username',verifyToken, async (req, res) => {
+router.get('/getNotifications/:username', async (req, res) => {
   try {
     const username = req.params.username;
     const notifications = await Notification.find({ postOwner: username, isRead: false }).sort({ createdAt: -1 });
@@ -397,7 +397,7 @@ router.get('/comments/:postId', async (req, res) => {
 });
 
 // Route to add a comment
-router.post('/comments/:postId', verifyToken, async (req, res) => {
+router.post('/comments/:postId', async (req, res) => {
   const { postId } = req.params;
   const { comment, commentBy } = req.body;
   const username = req.cookies.username;
@@ -452,7 +452,7 @@ router.post('/comments/:postId', verifyToken, async (req, res) => {
   }
 });
 
-router.delete('/comments/:postId/:commentId', verifyToken, async (req, res) => {
+router.delete('/comments/:postId/:commentId', async (req, res) => {
   const { postId, commentId } = req.params;
   const username = req.cookies.username;
 
@@ -493,7 +493,7 @@ router.delete('/comments/:postId/:commentId', verifyToken, async (req, res) => {
 });
 
 // Route to get current user details
-router.get('/me', verifyToken, async (req, res) => {
+router.get('/me', async (req, res) => {
   try {
     const username = req.cookies.username;
     const curUs = await userModel.findOne({ Username: username });
