@@ -6,29 +6,8 @@ const Jwt = require('jsonwebtoken');
 const Salt = process.env.SALT;
 const SecretKey = process.env.JWT_SECRET;
 const sendOTP = require('../Modules/Nodemailer.js')
-// const verifyToken = require('../Modules/VerifyToken.js')
+const verifyToken = require('../Modules/VerifyToken.js')
 const userDB = {};
-
-
-
-// const jwt = require('jsonwebtoken');
-// const SecretKey = process.env.JWT_SECRET; // Secret key used for signing tokens
-
-const verifyToken = (req, res, next) => {
-  const token = req.cookies.token; // Get the token from cookies
-
-  if (!token) {
-    return res.status(401).json({ message: 'No token provided, authorization denied.' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, SecretKey); // Verify the token
-    req.user = decoded; // Attach the decoded token (which contains user info) to the request object
-    next(); // Move to the next middleware/route handler
-  } catch (err) {
-    return res.status(401).json({ message: 'Token is not valid, authorization denied.' });
-  }
-};
 
 
 
