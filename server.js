@@ -8,10 +8,11 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 const Db = require('./Database/MongoDb.js');
 Db();
+// CORS configuration
 const corsOptions = {
-    origin: "*", // Ensure no trailing slash
-    methods: 'GET,POST,PUT,DELETE',
-    credentials: true
+  origin: ['http://localhost:5173', 'https://photoshare-reactapp-1.onrender.com'], // Add allowed origins
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true, // Allow cookies and credentials
 };
 
 app.use(cors(corsOptions)); // Apply CORS before routes
