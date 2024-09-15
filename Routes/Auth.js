@@ -12,11 +12,6 @@ const userDB = {};
 
 
 
-router.get('/',(req,res)=>{
-    res.json({
-        message : "Not A USer"
-    })
-})
 
 
 router.post("/signup",async (req,res)=>{
