@@ -21,7 +21,7 @@ router.post('/UploadPost',verifyToken, upload.single('file'), async (req, res) =
   }
 
   try {
-    const username = req.cookies.username;
+    const username = req.headers.username;;
 
     if (!username) {
       console.log('No username found in cookies.');
@@ -283,7 +283,7 @@ router.get('/profile/:username',verifyToken, async (req, res) => {
 // Like or Unlike a post
 router.post('/like',verifyToken, async (req, res) => {
   const { postId } = req.body;
-  const username = req.cookies.username;
+  const username = req.headers.username;
   console.log(`username - ${username}`);
 
   if (!username) {
@@ -353,7 +353,7 @@ router.post('/like',verifyToken, async (req, res) => {
 // Check if the user has liked a post
 router.get('/likeStatus/:postId', verifyToken, async (req, res) => {
   const { postId } = req.params;
-  const username = req.headers.username || req.cookies.username; // Get username from header or cookies
+  const username = req.headers.username ; // Get username from header or cookies
 
   if (!username) {
     return res.status(400).json({ message: 'Username not found' });
@@ -413,7 +413,7 @@ router.get('/comments/:postId',verifyToken, async (req, res) => {
 router.post('/comments/:postId',verifyToken, async (req, res) => {
   const { postId } = req.params;
   const { comment, commentBy } = req.body;
-  const username = req.cookies.username;
+  const username = req.headers.username;
 
   if (!username) {
     return res.status(400).json({ message: 'Username not found in cookies' });
@@ -467,7 +467,7 @@ router.post('/comments/:postId',verifyToken, async (req, res) => {
 
 router.delete('/comments/:postId/:commentId',verifyToken, async (req, res) => {
   const { postId, commentId } = req.params;
-  const username = req.cookies.username;
+  const username = req.headers.username;
 
   try {
     // Fetch the current user based on the username from cookies
@@ -508,7 +508,7 @@ router.delete('/comments/:postId/:commentId',verifyToken, async (req, res) => {
 // Route to get current user details
 router.get('/me',verifyToken, async (req, res) => {
   try {
-    const username = req.cookies.username;
+    const username = req.headers.username;
     const curUs = await userModel.findOne({ Username: username });
     if (!curUs) {
       return res.status(404).json({ message: 'User not found' });
