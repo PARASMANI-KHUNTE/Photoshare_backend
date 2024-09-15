@@ -143,30 +143,36 @@ router.put('/posts/:postId',verifyToken, async (req, res) => {
 });
 
 // DELETE post route
-router.delete('/posts/:postId',verifyToken, async (req, res) => {
+router.delete('/posts/:postId', verifyToken, async (req, res) => {
   const { postId } = req.params;
 
   try {
-      // Find the post by ID
-      const post = await postModel.findById(postId);
-      if (!post) {
-          return res.status(404).json({ success: false, message: 'Post not found' });
-      }
+    // Find the post by ID
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
 
-      // Delete the file from Firebase Storage
-      const fileName = post.ImageUrl.split('/').pop().split('?')[0]; // Extract file name from URL
-      const file = bucket.file(`posts/${fileName}`);
-      await file.delete();
+    // Extract file name from URL
+    if (!post.ImageUrl) {
+      return res.status(400).json({ success: false, message: 'No image URL associated with the post' });
+    }
+    const fileName = post.ImageUrl.split('/').pop().split('?')[0];
+    const file = bucket.file(`posts/${fileName}`);
 
-      // Delete the post from the database
-      await postModel.findByIdAndDelete(postId);
+    // Delete the file from Firebase Storage
+    await file.delete();
 
-      return res.status(200).json({ success: true, message: 'Post deleted successfully' });
+    // Delete the post from the database
+    await postModel.findByIdAndDelete(postId);
+
+    return res.status(200).json({ success: true, message: 'Post deleted successfully' });
   } catch (error) {
-      console.error('Error deleting post:', error);
-      return res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Error deleting post:', error);
+    return res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
+
 
 router.post('/profile/avatar/:username',verifyToken, upload.single('avatar'), async (req, res) => {
   const { username } = req.params;
