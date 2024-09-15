@@ -25,8 +25,8 @@
 // module.exports = verifyToken;
 
 
-// const jwt = require('jsonwebtoken');
-// const SecretKey = process.env.JWT_SECRET; // Secret key used for signing tokens
+const jwt = require('jsonwebtoken');
+const SecretKey = process.env.JWT_SECRET; // Secret key used for signing tokens
 
 // const verifyToken = (req, res, next) => {
 //   const token = req.cookies.token; // Get the token from cookies
