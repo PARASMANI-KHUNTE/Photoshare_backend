@@ -12,12 +12,13 @@ Db();
 const corsOptions = {
   origin: ['http://localhost:5173','https://photoshare-ctj3.onrender.com'], // Add allowed origins
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: '*',
+  allowedHeaders: ['Content-Type', 'Authorization', 'username', 'imageurl'], // Add any other headers you need
   credentials: true, // Allow cookies and credentials
 };
 
 app.use(cors(corsOptions)); // Apply CORS before routes
-
+// Handle preflight requests for CORS
+app.options('*', cors(corsOptions));
 app.use(express.json());
 const Auth = require('./Routes/Auth.js');
 const UploadPost = require('./Routes/UploadPost.js')
