@@ -12,7 +12,7 @@ const {uploadToFirebase , deleteFromFirebase} = require('../Modules/uploadToFire
 
 
 // UploadPost route
-router.post('/UploadPost',verifyToken, upload.single('file'), async (req, res) => {
+router.post('/UploadPost', verifyToken, upload.single('file'), async (req, res) => {
   const { postTitle, postDesc } = req.body;
   const file = req.file;
 
@@ -21,11 +21,11 @@ router.post('/UploadPost',verifyToken, upload.single('file'), async (req, res) =
   }
 
   try {
-    const username = req.headers.username;;
+    const username = req.headers.username; // Fetch username from headers
 
     if (!username) {
-      console.log('No username found in cookies.');
-      return res.status(400).json({ success: false, message: 'Username not found in cookies' });
+      console.log('No username found in header.');
+      return res.status(400).json({ success: false, message: 'Username not found in header' });
     }
 
     console.log(`File is uploaded by - ${username}`);
@@ -35,7 +35,6 @@ router.post('/UploadPost',verifyToken, upload.single('file'), async (req, res) =
 
     // Find the user by username
     const user = await userModel.findOne({ Username: normalizedUsername });
-
     if (!user) {
       console.log("User is not found.");
       return res.status(404).json({ success: false, message: 'User not found' });
@@ -46,6 +45,10 @@ router.post('/UploadPost',verifyToken, upload.single('file'), async (req, res) =
     // Upload file using the separate module
     const downloadURL = await uploadToFirebase(file);
 
+    if (!downloadURL) {
+      return res.status(400).json({ success: false, message: 'Image is not uploaded' });
+    }
+
     // Save the post with file URL, user, and avatar
     const newPost = new postModel({
       PostTitle: postTitle,
@@ -55,13 +58,18 @@ router.post('/UploadPost',verifyToken, upload.single('file'), async (req, res) =
       PostByAvtarUrl: user.AvatarUrl,
     });
 
-    await newPost.save();
+    const savePost = await newPost.save();
+    if (!savePost) {
+      return res.status(400).json({ success: false, message: 'Failed to upload your post' });
+    }
+
     return res.status(200).json({ success: true, message: 'Post uploaded successfully' });
   } catch (error) {
     console.error('Error uploading post:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    return res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
+
 
 // GET all posts route
 router.get('/posts',verifyToken, async (req, res) => {
