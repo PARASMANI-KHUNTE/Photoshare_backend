@@ -20,7 +20,7 @@ dotenv.config();
 const admin = require('firebase-admin');
 
 // Parse the service account from the environment variable
-const serviceAccount = JSON.parse(process.env.ggvians-2c0ed-firebase-adminsdk-a9cow-626cd394ae.json);
+const serviceAccount = JSON.parse('/etc/secrets/ggvians-2c0ed-firebase-adminsdk-a9cow-626cd394ae.json');
 
 
 // Initialize the Firebase Admin SDK
