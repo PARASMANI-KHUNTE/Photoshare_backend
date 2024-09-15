@@ -43,10 +43,10 @@ const SecretKey = process.env.JWT_SECRET; // Secret key used for signing tokens
 //     return res.status(401).json({ message: 'Token is not valid, authorization denied.' });
 //   }
 // };
-
+const tokenSt = localStorage.getItem("token");
 
 const verifyToken = (req, res, next) => {
-  const token = req.cookies.token || req.headers['authorization']?.split(' ')[1]; // Check cookies or Authorization header
+  const token = req.cookies.token || req.headers['authorization']?.split(' ')[1];   || || tokenSt ;   // Check cookies or Authorization header
 
   if (!token) {
     return res.status(401).json({ message: 'No token provided, authorization denied.' });
