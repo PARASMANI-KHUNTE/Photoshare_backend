@@ -216,10 +216,23 @@ router.post('/profile/avatar/:username',verifyToken, upload.single('avatar'), as
     user.AvatarUrl = newAvatarUrl;
     await user.save();
 
-    // Update the avatar URL in all posts created by this user
+    // // Update the avatar URL in all posts created by this user
+    // await postModel.updateMany(
+    //   { PostBy: user._id },
+    //   { PostByAvtarUrl: newAvatarUrl }
+    // );
+
     await postModel.updateMany(
-      { PostBy: user._id },
-      { PostByAvtarUrl: newAvatarUrl }
+      { "PostBy": user._id, "PostComments.commentBy._id": user._id }, // match posts and comments by user ID
+      {
+        $set: {
+          "PostByAvtarUrl": newAvatarUrl, // update post avatar
+          "PostComments.$[comment].commentBy.avatarUrl": newAvatarUrl // update avatar in comments
+        }
+      },
+      {
+        arrayFilters: [{ "comment.commentBy._id": user._id }] // filter to update only matching comments
+      }
     );
 
     return res.status(200).json({ success: true, avatarUrl: newAvatarUrl });
