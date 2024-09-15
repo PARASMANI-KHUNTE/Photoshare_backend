@@ -25,23 +25,41 @@
 // module.exports = verifyToken;
 
 
-const jwt = require('jsonwebtoken');
-const SecretKey = process.env.JWT_SECRET; // Secret key used for signing tokens
+// const jwt = require('jsonwebtoken');
+// const SecretKey = process.env.JWT_SECRET; // Secret key used for signing tokens
+
+// const verifyToken = (req, res, next) => {
+//   const token = req.cookies.token; // Get the token from cookies
+
+//   if (!token) {
+//     return res.status(401).json({ message: 'No token provided, authorization denied.' });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, SecretKey); // Verify the token
+//     req.user = decoded; // Attach the decoded token (which contains user info) to the request object
+//     next(); // Move to the next middleware/route handler
+//   } catch (err) {
+//     return res.status(401).json({ message: 'Token is not valid, authorization denied.' });
+//   }
+// };
+
 
 const verifyToken = (req, res, next) => {
-  const token = req.cookies.token; // Get the token from cookies
+  const token = req.cookies.token || req.headers['authorization']?.split(' ')[1]; // Check cookies or Authorization header
 
   if (!token) {
     return res.status(401).json({ message: 'No token provided, authorization denied.' });
   }
 
   try {
-    const decoded = jwt.verify(token, SecretKey); // Verify the token
-    req.user = decoded; // Attach the decoded token (which contains user info) to the request object
-    next(); // Move to the next middleware/route handler
+    const decoded = jwt.verify(token, SecretKey);
+    req.user = decoded;
+    next();
   } catch (err) {
     return res.status(401).json({ message: 'Token is not valid, authorization denied.' });
   }
 };
+
 
 module.exports = verifyToken;
