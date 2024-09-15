@@ -18,10 +18,11 @@ dotenv.config();
 // const storage = firebase.storage();
 // module.exports = storage;
 const admin = require('firebase-admin');
-const fs = require('fs');
-const serviceAccountPath = `./${process.env.ggvians-2c0ed-firebase-adminsdk-a9cow-626cd394ae.json}`; // Environment variable for the file path
 
-const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf-8'));
+// Parse the service account from the environment variable
+const serviceAccount = JSON.parse(process.env.ggvians-2c0ed-firebase-adminsdk-a9cow-626cd394ae.json);
+
+
 // Initialize the Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
