@@ -7,6 +7,13 @@ const uploadToFirebase = (file, folderName = 'posts') => {
     const fileName = `${uuidv4()}_${file.originalname}`;
     const fileUpload = bucket.file(`${folderName}/${fileName}`);
 
+    console.log(`Uploading file: ${folderName}/${fileName}`);
+
+    if (!file.buffer) {
+      console.error('File buffer is missing');
+      return reject('File data is not available');
+    }
+
     // Create stream and upload file to Firebase Storage
     const stream = fileUpload.createWriteStream({
       metadata: {
@@ -38,28 +45,28 @@ const uploadToFirebase = (file, folderName = 'posts') => {
 };
 
 // Function to delete file from Firebase
-const deleteFromFirebase = (fileUrl) => {
+const deleteFromFirebase = (fileUrl, folderName = 'avatars') => {
   return new Promise((resolve, reject) => {
     // Extract the path to the file from the URL (removing everything after '?')
-    const fileName = fileUrl.split('avatars/')[1].split('?')[0];
+    const fileName = fileUrl.split(`${folderName}/`)[1]?.split('?')[0];
     
     if (!fileName) {
+      console.error('Could not extract file name from URL:', fileUrl);
       return reject('Invalid file path');
     }
 
-    const fileToDelete = bucket.file(`avatars/${fileName}`);
+    const fileToDelete = bucket.file(`${folderName}/${fileName}`);
 
     fileToDelete.delete()
       .then(() => {
-        console.log(`Successfully deleted file: avatars/${fileName}`);
+        console.log(`Successfully deleted file: ${folderName}/${fileName}`);
         resolve(true);
       })
       .catch((error) => {
-        console.error(`Error deleting file from Firebase: avatars/${fileName}`, error);
+        console.error(`Error deleting file from Firebase: ${folderName}/${fileName}`, error);
         reject('Failed to delete file from Firebase');
       });
   });
 };
-
 
 module.exports = { uploadToFirebase, deleteFromFirebase };
