@@ -351,16 +351,15 @@ router.post('/like',verifyToken, async (req, res) => {
 
 
 // Check if the user has liked a post
-router.get('/likeStatus/:postId',verifyToken, async (req, res) => {
+router.get('/likeStatus/:postId', verifyToken, async (req, res) => {
   const { postId } = req.params;
-  const username = req.cookies.username; // Fetch username from cookies
+  const username = req.headers.username || req.cookies.username; // Get username from header or cookies
 
   if (!username) {
-    return res.status(400).json({ message: 'Username not found in cookies' });
+    return res.status(400).json({ message: 'Username not found' });
   }
 
   try {
-    // Find the user based on the username from cookies
     const user = await userModel.findOne({ Username: username });
 
     if (!user) {
@@ -381,6 +380,7 @@ router.get('/likeStatus/:postId',verifyToken, async (req, res) => {
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 });
+
 
 
 router.get('/getNotifications/:username',verifyToken, async (req, res) => {
