@@ -8,7 +8,7 @@ const serviceAccount = require(serviceAccountPath);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET ,
+  storageBucket: process.env.storageBucket ,
 });
 
 const bucket = admin.storage().bucket();
