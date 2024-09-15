@@ -32,7 +32,7 @@ router.post('/UploadPost', verifyToken, upload.single('file'), async (req, res) 
 
     // Normalize username case if necessary
     const normalizedUsername = username.toLowerCase();
-
+    
     // Find the user by username
     const user = await userModel.findOne({ Username: normalizedUsername });
     if (!user) {
@@ -43,10 +43,16 @@ router.post('/UploadPost', verifyToken, upload.single('file'), async (req, res) 
     console.log(`User found: ${user}`);
 
     // Upload file using the separate module
-    const downloadURL = await uploadToFirebase(file);
+    let downloadURL;
+    try {
+      downloadURL = await uploadToFirebase(file);
 
-    if (!downloadURL) {
-      return res.status(400).json({ success: false, message: 'Image is not uploaded' });
+      if (!downloadURL) {
+        return res.status(400).json({ success: false, message: 'Image is not uploaded' });
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return res.status(500).json({ success: false, message: 'Image upload failed', error: error.message });
     }
 
     // Save the post with file URL, user, and avatar
@@ -58,8 +64,8 @@ router.post('/UploadPost', verifyToken, upload.single('file'), async (req, res) 
       PostByAvtarUrl: user.AvatarUrl,
     });
 
-    const savePost = await newPost.save();
-    if (!savePost) {
+    const savedPost = await newPost.save();
+    if (!savedPost) {
       return res.status(400).json({ success: false, message: 'Failed to upload your post' });
     }
 
@@ -69,6 +75,7 @@ router.post('/UploadPost', verifyToken, upload.single('file'), async (req, res) 
     return res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 });
+
 
 
 // GET all posts route
