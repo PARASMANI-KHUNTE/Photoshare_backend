@@ -12,7 +12,7 @@ Db();
 const corsOptions = {
   origin: ['http://localhost:5173','https://photoshare-ctj3.onrender.com'], // Add allowed origins
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'username'],
+  allowedHeaders: '*',
   credentials: true, // Allow cookies and credentials
 };
 
