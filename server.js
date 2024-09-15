@@ -10,7 +10,7 @@ const Db = require('./Database/MongoDb.js');
 Db();
 // CORS configuration
 const corsOptions = {
-  origin: ['http://localhost:5173', 'https://photoshare-reactapp-1.onrender.com'], // Add allowed origins
+  origin: ['http://localhost:5173', 'https://photoshare-ctj3.onrender.com/'], // Add allowed origins
   methods: 'GET,POST,PUT,DELETE',
   credentials: true, // Allow cookies and credentials
 };
