@@ -205,15 +205,27 @@ router.put('/resetPassword', async (req, res) => {
     }
   
     try {
-      // Find the user and update their password
-      const User = await user.findOne({ email });
+
+
+
+
+
+    const hashedPassword = await bcrypt.hash(password, parseInt(Salt));
+        // Find the user by email and update the password
+    const User = await user.findOneAndUpdate(
+      { email },
+      { $set: { Password: hashedPassword } },
+      { new: true } // This option returns the updated document
+    );
+      // // Find the user and update their password
+      // const User = await user.findOne({ email });
       if (!User) {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
   
-      // Hash the new password and save
-      User.Password = await bcrypt.hash(password, parseInt(Salt));
-      await User.save();
+      // // Hash the new password and save
+      // User.Password = 
+      // await User.save();
   
       return res.status(200).json({ success: true, message: 'Password updated successfully', username: User.Username });
     } catch (error) {
