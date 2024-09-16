@@ -120,6 +120,7 @@ router.post("/login", async (req, res) => {
     }
 
     try {
+        // Find the user by username
         const existingUser = await user.findOne({ Username });
         if (!existingUser) {
             return res.status(404).json({
@@ -127,7 +128,14 @@ router.post("/login", async (req, res) => {
             });
         }
 
-        // Check password
+        // Check if the user is verified
+        if (!existingUser.IsVerified) {
+            return res.status(403).json({
+                message: "User is not verified. Please verify your account before logging in."
+            });
+        }
+
+        // Check if the password is valid
         const isPasswordValid = await bcrypt.compare(Password, existingUser.Password);
         if (!isPasswordValid) {
             return res.status(401).json({
@@ -139,26 +147,21 @@ router.post("/login", async (req, res) => {
         const token = Jwt.sign({ id: existingUser._id, username: existingUser.Username }, SecretKey, {
             expiresIn: '1h' // Token expires in 1 hour
         });
-        
-        // return res.status(200).cookie( "token" , token , { expires: new Date(Date.now() + 3600000), httpOnly: true }).cookie( "username" , existingUser.Username , { expires: new Date(Date.now() + 3600000), httpOnly: true }).json({
-        //     success : true ,
-        //     message: "Login successful",
-        //     token,
-        //     username: existingUser.Username
-        // }); // Set cookie with expiration time (1 hour)
+
         // Set cookies for token and username
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
-            maxAge: 3600000,
-          });
+            maxAge: 3600000, // 1 hour
+        });
 
         res.cookie('username', existingUser.Username, {
             httpOnly: false,  // Can be accessed from client-side JS
             maxAge: 3600000   // 1 hour
         });
 
+        // Send successful response
         return res.status(200).json({
             success: true,
             message: 'Login successful',
@@ -168,12 +171,13 @@ router.post("/login", async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({
-            success : false ,
+            success: false,
             message: "Internal server error",
             error: error.message
         });
     }
 });
+
 
 // Logout Route (clears token from cookies)
 router.post('/logout',verifyToken, (req, res) => {
