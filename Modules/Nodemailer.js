@@ -18,7 +18,7 @@ const sendOTP = async (email) => {
 
   // Email options
   const mailOptions = {
-    from: {name : 'ggvians' , address : process.env.Email },
+    from: {name : 'PHOTOSHARE' , address : process.env.Email },
     to: email,
     subject: 'OTP Verification',
     text: `Your OTP is: ${OTP}`,
