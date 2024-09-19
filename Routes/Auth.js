@@ -210,7 +210,7 @@ router.put('/resetPassword', async (req, res) => {
   
     try {
       // Find the user and update their password
-      const User = await user.findOneAndUpdate({ email });
+      const User = await user.findOne({ email });
       if (!User) {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
